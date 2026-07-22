@@ -1,0 +1,54 @@
+# CREATE TABLE transfer (id INT PRIMARY KEY AUTO_INCREMENT, from_account INT NOT NULL, to_account INT NOT NULL,
+#   amount DECIMAL(12,2) NOT NULL, currency_code CHAR(3) NOT NULL, executed_at DATETIME NOT NULL, status VARCHAR(10) NOT NULL,
+#   FOREIGN KEY (from_account) REFERENCES account(id), FOREIGN KEY (to_account) REFERENCES account(id),
+#   FOREIGN KEY (currency_code) REFERENCES currency(code));
+
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-transfer
+      author: fx
+      comment: The transfers table. Every other table points here.
+      changes:
+        - createTable:
+            tableName: transfer
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: from_account
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_transfer_from_account
+                    references: account(id)
+              - column:
+                  name: to_account
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_transfer_to_account
+                    references: account(id)
+              - column:
+                  name: amount
+                  type: DECIMAL(12,2)
+                  constraints: { nullable: false }
+              - column:
+                  name: currency_code
+                  type: CHAR(3)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_transfer_currency
+                    references: currency(code)
+              - column:
+                  name: executed_at
+                  type: DATETIME
+                  constraints: { nullable: false }
+              - column:
+                  name: status
+                  type: VARCHAR(10)
+                  constraints: { nullable: false }
+      rollback:
+        - dropTable: { tableName: transfer }

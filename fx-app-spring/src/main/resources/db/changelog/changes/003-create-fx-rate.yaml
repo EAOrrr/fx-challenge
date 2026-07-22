@@ -1,0 +1,42 @@
+# CREATE TABLE fx_rate (id INT PRIMARY KEY AUTO_INCREMENT, base_code CHAR(3) NOT NULL, quote_code CHAR(3) NOT NULL,
+#   rate DECIMAL(12,4) NOT NULL, rate_date DATE NOT NULL,
+#   FOREIGN KEY (base_code) REFERENCES currency(code), FOREIGN KEY (quote_code) REFERENCES currency(code));
+
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-fx-rate
+      author: fx
+      comment: The fx_rate table. Every other table points here.
+      changes:
+        - createTable:
+            tableName: fx_rate
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: base_code
+                  type: CHAR(3)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fx_rate_base_currency
+                    references: currency(code)
+              - column:
+                  name: quote_code
+                  type: CHAR(3)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fx_rate_quote_currency
+                    references: currency(code)
+              - column:
+                  name: rate
+                  type: DECIMAL(12,4)
+                  constraints: { nullable: false }
+              - column:
+                  name: rate_date
+                  type: DATE
+                  constraints: { nullable: false }
+      rollback:
+        - dropTable: { tableName: fx_rate }

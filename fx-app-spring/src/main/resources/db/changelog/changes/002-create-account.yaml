@@ -1,0 +1,41 @@
+# CREATE TABLE account (id INT PRIMARY KEY AUTO_INCREMENT, owner_name VARCHAR(60) NOT NULL,
+#   currency_code CHAR(3) NOT NULL, balance DECIMAL(12,2) NOT NULL DEFAULT 0, account_type VARCHAR(10) NOT NULL,
+#   FOREIGN KEY (currency_code) REFERENCES currency(code));
+
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-account
+      author: fx
+      comment: The accounts table. Every other table points here.
+      changes:
+        - createTable:
+            tableName: account
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: owner_name
+                  type: VARCHAR(60)
+                  constraints: { nullable: false }
+              - column:
+                  name: currency_code
+                  type: CHAR(3)
+                  constraints: 
+                    nullable: false
+                    foreignKeyName: fk_account_currency
+                    references: currency(code)
+              - column:
+                  name: balance
+                  type: DECIMAL(12,2)
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+              - column:
+                  name: account_type
+                  type: VARCHAR(10)
+                  constraints: { nullable: false }
+        -
+      rollback:
+        - dropTable: { tableName: account }
